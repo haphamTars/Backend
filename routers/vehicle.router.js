@@ -1,0 +1,11 @@
+const vehicleRouter = require("express").Router()
+
+const vehicleController = require("../controllers/vehicle.controller")
+
+vehicleRouter.post("/", vehicleController.addVehicle)
+
+vehicleRouter.get("/", vehicleController.getAllVehicle)
+
+vehicleRouter.delete("/:id", vehicleController.deleteById)
+
+module.exports = vehicleRouter
