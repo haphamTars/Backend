@@ -9,4 +9,7 @@ tagRouter.get("/", tagController.getAllTag)
 tagRouter.get("/:id", tagController.getBySerial)
 
 tagRouter.delete("/:id", tagController.deleteById)
+
+tagRouter.post("/import", tagController.importCsv)
+
 module.exports = tagRouter

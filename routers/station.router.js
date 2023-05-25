@@ -8,4 +8,6 @@ stationRouter.get("/", stationController.getAllStation)
 
 stationRouter.delete("/:id", stationController.deleteById)
 
+stationRouter.post("/import", stationController.importCsv)
+
 module.exports = stationRouter
