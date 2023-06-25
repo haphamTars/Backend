@@ -1,5 +1,10 @@
 const Tag = require("../models/tag.model")
 const csvParser = require('../helpers/parseCsv')
+const multer = require('multer');
+const fs = require('fs');
+const upload = multer({ dest: 'uploads/' });
+const path = require('path');
+
 
 const tagController = {
 
@@ -29,7 +34,7 @@ const tagController = {
             const tag = await Tag.findById(req.params.id);
             res.status(200).json(tag)
         } catch (error) {
-            res.status(500).json(err)
+            res.status(500).json(error)
         }
     },
 
@@ -42,17 +47,35 @@ const tagController = {
         }
     },
 
+    updatedTag: async (req, res) => {
+        try {
+            const newTag = req.body.tag
+            const id = req.params.id
+            const updateTag = await Tag.findByIdAndUpdate(id, newTag)
+            res.status(200).json(updateTag)
+        } catch (error) {
+            res.status(500).json(err)
+        }
+    },
+
     importCsv: async (req, res) => {
         try {
-            const filePath = 'uploads/tag.csv';
-            const header = ['isActive', 'tagSerial'];
+            if (!req.file) {
+                return res.status(400).send('No file uploaded');
+            }
+            const filePath = path.resolve(req.file.path);
+            console.log(filePath)
+            const header = ['tagSerial', 'isActive'];
 
-            const jsonArray = await parseCsvToJson(filePath, header);
+            const jsonArray = await csvParser.parseCsvToJson(filePath, header);
 
             const updatedTags = [];
 
             for (const json of jsonArray) {
                 const filter = { tagSerial: json.tagSerial };
+                
+                if (json.isActive == 'true') json.isActive = true
+                else json.isActive = false
 
                 const existingTag = await Tag.findOne(filter);
 

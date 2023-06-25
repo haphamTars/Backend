@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const dotenv = require('dotenv')
 const db = require('./database/dbconnect');
 const mqtt = require("mqtt")
+const ViolationController = require("./controllers/violation.controller")
 
 const tagRoute = require('./routers/tag.router')
 const stationRoute = require('./routers/station.router')
@@ -17,6 +18,7 @@ const clientId = 'f121f6d7-4891-4eae-be9d-400bb43a45ba'
 
 db.initDbConnection()
 app.use(bodyParser.json({limit: "50mb"}))
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
 app.use(morgan("common"))
 
@@ -33,8 +35,6 @@ app.use('/v1/person', personRoute)
 const client = mqtt.connect("mqtt://broker.hivemq.com:1883")
 client.on("connect", async function () {
 
-    client.publish('/hapt/Pub', 'Hello mqtt')
-
     client.subscribe("/hapt/Pub", function (err) {
         if (err) {
             console.log(err.message);
@@ -45,9 +45,13 @@ client.on("connect", async function () {
 
 
 client.on("message", (topic, message) => {
+
     try {
         console.log("received data: ");
         console.log(message.toString());
+        data = JSON.parse(message.toString());
+        console.log(data)
+        ViolationController.collect(data)
     } catch (err) {
         console.log("error: ", err.message);
     }

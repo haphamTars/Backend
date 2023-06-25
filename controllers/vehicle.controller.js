@@ -1,7 +1,31 @@
 const Vehicle = require("../models/vehicle.model")
 const csvParser = require('../helpers/parseCsv')
+const Tag = require('../models/tag.model')
+const Person = require('../models/person.model')
 
 const VehicleController = {
+
+    createVehicle: async(req,res) => {
+        try {
+            const data = req.body.vehicle
+            const tagSerial = data.tag
+            const personId = data.person
+            const type = data.type
+            const vehicleSerial = data.serial
+            const tag = await Tag.findOne({tagSerial: tagSerial})
+            const person = await Person.findOne({identifier: personId})
+            const newVehicle = new Vehicle({
+                tag: tag._id,
+                person: person._id,
+                type: type,
+                serial: vehicleSerial
+            })
+            const vehicle = await newVehicle.save()
+            return res.status(200).json(newVehicle)
+        } catch (err) {
+            res.status(500).json(err)
+        } 
+    },
 
     addVehicle: async (req, res) => {
         try {
@@ -17,7 +41,7 @@ const VehicleController = {
 
     getAllVehicle: async (req, res) => {
         try {
-            const vehicles = await Vehicle.find().populate('tag')
+            const vehicles = await Vehicle.find().populate('tag').populate('person')
             res.status(200).json(vehicles);
         } catch (err) {
             res.status(500).json(err)
@@ -26,7 +50,7 @@ const VehicleController = {
 
     deleteById: async (req, res) => {
         try {
-            const tag = await Tag.findByIdAndDelete(req.params.id);
+            const tag = await Vehicle.findByIdAndDelete(req.params.id);
             res.status(200).json(tag)
         } catch (error) {
             res.status(500).json(err)

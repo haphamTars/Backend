@@ -2,7 +2,7 @@ const vehicleRouter = require("express").Router()
 
 const vehicleController = require("../controllers/vehicle.controller")
 
-vehicleRouter.post("/", vehicleController.addVehicle)
+vehicleRouter.post("/", vehicleController.createVehicle)
 
 vehicleRouter.get("/", vehicleController.getAllVehicle)
 

@@ -27,10 +27,22 @@ const PersonController = {
 
     deleteById: async (req, res) => {
         try {
-            const tag = await Tag.findByIdAndDelete(req.params.id);
-            res.status(200).json(tag)
+            const person = await Person.findByIdAndDelete(req.params.id);
+            res.status(200).json(person)
         } catch (error) {
             res.status(500).json(err)
+        }
+    },
+
+    updatePerson: async (req, res) => {
+        try {
+            const newPerson = req.body.person
+            console.log(newPerson)
+            const _id = req.params.id
+            const person =await Person.findByIdAndUpdate(_id, newPerson)
+            return res.status(200).json(person)
+        } catch (error) {
+            res.status(500).json(error)
         }
     },
 
